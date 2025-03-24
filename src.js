@@ -10,9 +10,7 @@ const Gameboard = (() => {
   const getBoard = () => board;
 
   const placeMark = (index, mark) => {
-    if (index > 8) {
-      throw Error('index is too high')
-    }
+    if (index > 8) throw Error('index is too high')
     board[index] = mark;
   }
   return {getBoard, placeMark};
@@ -42,7 +40,6 @@ const Gamecontroller = (() => {
   let player2 = null;
   let players = 0;
   let turn = !!(Math.round(Math.random())); //used in Player.turn true/false
-  //check for wins
 
   const getBoard = () => board;
   const getPlayers = () => {
@@ -97,7 +94,7 @@ const Gamecontroller = (() => {
   const checkGameOutcome = (player) => { //Bruteforce lol
     //Sideways
     marker = player.getMarker();
-    console.log('MARKER IS', marker);
+
     if (board[0] === marker && board[1] === marker && board[2] === marker) {
       return 1;
     }
@@ -128,8 +125,9 @@ const Gamecontroller = (() => {
     }
 
     if (checkDraw()) {
-      console.log('DRAW!')
+      endGame('DRAW')
     }
+    return 0;
   }
 
   const checkDraw = () => {
@@ -180,8 +178,11 @@ const Displaycontroller = (() => {
   }
 
   const setTitleText = (name) => {
-    title.innerText = name + " is the winner!";
-    return 1;
+    if (name != 'DRAW') {
+      title.innerText = name + " is the winner!";
+      return 1;
+    }
+    title.innerText = name;
   }
 
   const removeGrid = () => {
@@ -221,32 +222,3 @@ const InputHandler = (() => {
 
   return {clickHandler};
 })();
-
-
-
-/*
-0 1 2
-3 4 5
-6 7 8
-
-O O X
-X O X
-O X O
-
-X X O
-O X O
-X O X
-
-Gamecontroller.addPlayer('Tom'); 
-Gamecontroller.addPlayer('Sa'); 
-Gamecontroller.placeMarker(0); 
-Gamecontroller.placeMarker(2); 
-Gamecontroller.placeMarker(1); 
-Gamecontroller.placeMarker(3); 
-Gamecontroller.placeMarker(4);
-Gamecontroller.placeMarker(5);
-Gamecontroller.placeMarker(6);
-Gamecontroller.placeMarker(7);
-Gamecontroller.placeMarker(8);
-
-*/
