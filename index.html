@@ -5,9 +5,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <link rel="stylesheet" href="style.css">
-  <script src="src.js refer"></script>
+  <script src="src.js" defer></script>
 </head>
 <body>
-  
+  <div class="content">
+    <h1>Tic Tac Toe</h1>
+    <div class="infoscreen">
+      <p class="turn"></p>
+      <button id="reset">Reset</button>
+    </div>
+    <div class="main-grid">
+      <button data-index="0" onclick="InputHandler.clickHandler(event)"></button>
+      <button data-index="1" onclick="InputHandler.clickHandler(event)"></button>
+      <button data-index="2" onclick="InputHandler.clickHandler(event)"></button>
+      <button data-index="3" onclick="InputHandler.clickHandler(event)"></button>
+      <button data-index="4" onclick="InputHandler.clickHandler(event)"></button>
+      <button data-index="5" onclick="InputHandler.clickHandler(event)"></button>
+      <button data-index="6" onclick="InputHandler.clickHandler(event)"></button>
+      <button data-index="7" onclick="InputHandler.clickHandler(event)"></button>
+      <button data-index="8" onclick="InputHandler.clickHandler(event)"></button>
+    </div>
+  </div>
+
+  <dialog>
+    <form >
+      <h2>Enter Player Names:</h2>
+      <label for="name1">Player 1:</label>
+      <input type="text" name="name1" maxlength="10" required>
+
+      <label for="name2">Player 2:</label>
+      <input type="text" name="name2" maxlength="10" required>
+
+      <input type="submit" value="Start Game" id="sg">
+    </form>
+  </dialog>
 </body>
 </html>
