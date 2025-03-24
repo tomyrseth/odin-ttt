@@ -16,7 +16,7 @@ const Gameboard = (() => {
   return {getBoard, placeMark};
 })();
 
-//Factory Player
+//Factory
 const Player = (name, marker, turn) => {
   const playerName = name;
   const playerMarker = marker;
@@ -92,9 +92,9 @@ const Gamecontroller = (() => {
   }
 
   const checkGameOutcome = (player) => { //Bruteforce lol
-    //Sideways
     marker = player.getMarker();
 
+    //Sideways
     if (board[0] === marker && board[1] === marker && board[2] === marker) {
       return 1;
     }
