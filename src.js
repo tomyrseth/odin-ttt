@@ -1,7 +1,3 @@
-function isEven(n) {
-  return n % 2 == 0;
-}
-
 //Factory IIFE
 const Gameboard = (() => {
   const board = new Array(9).fill(null);
@@ -194,7 +190,7 @@ const Displaycontroller = (() => {
   return {setButtonText, setTurnText, setTitleText, removeGrid};
 })();
 
-
+//Factory IIFE
 const InputHandler = (() => {
   const form = document.querySelector('form');
   const dia = document.querySelector('dialog');
