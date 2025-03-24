@@ -1,6 +1,7 @@
 function isEven(n) {
   return n % 2 == 0;
 }
+
 //Factory IIFE
 const Gameboard = (() => {
   const board = new Array(9).fill(null);
@@ -18,14 +19,17 @@ const Gameboard = (() => {
 })();
 
 //Factory Player
-const Player = (name, marker) => {
+const Player = (name, marker, turn) => {
   const playerName = name;
   const playerMarker = marker;
+  let playerTurn = turn;
 
   const getName = () => playerName;
   const getMarker = () => playerMarker;
+  const toggleTurn = () => playerTurn = !playerTurn;
+  const getTurn= () => playerTurn;
 
-  return {getName, getMarker};
+  return {getName, getMarker, toggleTurn, getTurn};
 };
 
 //Factory IIFE
@@ -37,8 +41,7 @@ const Gamecontroller = (() => {
   let player1 = null;
   let player2 = null;
   let players = 0;
-  let turn = Math.round(Math.random()); // Even number = p1 turn, odd number = p2 turn
-
+  let turn = !!(Math.round(Math.random())); //used in Player.turn true/false
   //check for wins
 
   const getBoard = () => board;
@@ -52,12 +55,12 @@ const Gamecontroller = (() => {
       return 0;
     }
     if (players === 0) {
-      player1 = Player(name, mark_x);
+      player1 = Player(name, mark_x, turn);
       players++;
       return 1;
     }
     if (players === 1){
-      player2 = Player(name, mark_o);
+      player2 = Player(name, mark_o, !turn);
       players++;
       return 1;
     }
@@ -77,79 +80,56 @@ const Gamecontroller = (() => {
       alert('Choose a valid space!');
       return 0;
     };
-    if (checkTurn() === player1) {
-      board[index] = player1.getMarker();
-      turn++;
-      checkWin(player1);
-      //setButtonText(player1.getMarker())
-      console.log(board);      
-      return 1;
+
+    playerTrue = checkTurn();
+    playerFalse = checkFalse();
+    board[index] = playerTrue.getMarker();
+    playerTrue.toggleTurn()
+    playerFalse.toggleTurn();
+    if (checkGameOutcome(playerTrue)) { //If victory
+      endGame(playerTrue.getName());
     }
-
-    board[index] = player2.getMarker();
-    turn++;
-    checkWin(player2)
-    //setButtonText(player1.getMarker())
-    console.log(board);
+    Displaycontroller.setTurnText();
     return 1;
-
-    // If player.turn player.getmarker
 
   }
 
-  const checkWin = (player) => { //Bruteforce lol
+  const checkGameOutcome = (player) => { //Bruteforce lol
     //Sideways
     marker = player.getMarker();
+    console.log('MARKER IS', marker);
     if (board[0] === marker && board[1] === marker && board[2] === marker) {
-      console.log(`${player.getName()} won!1`);
-      console.log(marker);
-      console.log(board[0], board[1], board[2], '?');
       return 1;
     }
-    if (board[0] === marker && board[1] === marker && board[2] === marker) {
-      console.log(`${player.getName()} won!2`);
-      console.log(marker);
+    if (board[3] === marker && board[4] === marker && board[5] === marker) {
       return 1;
     }
-    if (board[0] === marker && board[1] === marker && board[2] === marker) {
-      console.log(`${player.getName()} won!3`);
-      console.log(marker);
+    if (board[6] === marker && board[7] === marker && board[8] === marker) {
       return 1;
     }
 
     //Downwards
-    if (board[0] === marker && board[1] === marker && board[2] === marker) {
-      console.log(`${player.getName()} won!4`);
-      console.log(marker);
+    if (board[0] === marker && board[3] === marker && board[6] === marker) {
       return 1;
     }
-    if (board[0] === marker && board[1] === marker && board[2] === marker) {
-      console.log(`${player.getName()} won!5`);
-      console.log(marker);
+    if (board[1] === marker && board[4] === marker && board[7] === marker) {
       return 1;
     }
-    if (board[0] === marker && board[1] === marker && board[2] === marker) {
-      console.log(`${player.getName()} won!6`);
-      console.log(marker);
+    if (board[2] === marker && board[5] === marker && board[8] === marker) {
       return 1;
     }
 
     //Cross
-    if (board[0] === marker && board[1] === marker && board[2] === marker) {
-      console.log(`${player.getName()} won!7`);
-      console.log(marker);
+    if (board[0] === marker && board[4] === marker && board[8] === marker) {
       return 1;
     }
-    if (board[0] === marker && board[1] === marker && board[2] === marker) {
-      console.log(`${player.getName()} won!8`);
-      console.log(marker);
+    if (board[2] === marker && board[4] === marker && board[6] === marker) {
       return 1;
     }
 
     if (checkDraw()) {
       console.log('DRAW!')
     }
-
   }
 
   const checkDraw = () => {
@@ -158,38 +138,59 @@ const Gamecontroller = (() => {
   }
 
   const checkTurn = () => {
-    if (isEven(turn)) return player1;
-    return player2;
+    for (const player of getPlayers()) {
+        if (player.getTurn()) return player;
+    }
+    return null;
+  };
+
+  const checkFalse = () => {
+    for (const player of getPlayers()) {
+        if (!player.getTurn()) return player;
+    }
+    return null;
+  };
+
+  const endGame = (name) => {
+    Displaycontroller.removeGrid();
+    Displaycontroller.setTitleText(name)
   }
 
-  return{getBoard, addPlayer, getPlayers, placeMarker, start, checkTurn};
+  return{getBoard, addPlayer, getPlayers, placeMarker, start, checkTurn, checkFalse, endGame};
   //
 })();
 
 //Factory IIFE
 const Displaycontroller = (() => {
   const pTurn = document.querySelector('.turn');
+  const grid = document.querySelector('.main-grid');
+  const title = document.querySelector('h1');
   const board = Gameboard.getBoard();
+  const players = Gamecontroller.getPlayers();
 
-  const setButtonText = (button, player) => {
-    button.innerText = player.getMarker();
+  const setButtonText = (event, index) => {
+    event.target.innerText = board[index];
     return 1;
   }
 
-  setTurnText = (turn) => {
-    if (isEven(turn)) {
-      pTurn.innerText = Gamecontroller.getPlayers()[0].getName()+"'s turn.";
-      return 1;
-    }
-    pTurn.innerText = Gamecontroller.getPlayers()[1].getName()+"'s turn.";
+  const setTurnText = () => {
+    playerTrue = Gamecontroller.checkTurn();
+    pTurn.innerText = playerTrue.getName()+"'s turn.";
+    return 1;
   }
 
-  const clickHandler = (event) => {
-    const index = event.target.getAttribute("data-index");
-    Gamecontroller.placeMarker(index);
+  const setTitleText = (name) => {
+    title.innerText = name + " is the winner!";
+    return 1;
   }
 
-  return {setButtonText, setTurnText,clickHandler, pTurn};
+  const removeGrid = () => {
+    pTurn.remove();
+    grid.remove();
+    return 1;
+  }
+
+  return {setButtonText, setTurnText, setTitleText, removeGrid};
 })();
 
 
@@ -200,7 +201,8 @@ const InputHandler = (() => {
 
   const clickHandler = (event) => {
     const index = event.target.getAttribute("data-index");
-    console.log(index);
+    Gamecontroller.placeMarker(index);
+    Displaycontroller.setButtonText(event, index);
   }
 
   const formSubmit = (event) => {
